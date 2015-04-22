@@ -1,0 +1,14 @@
+{application, scramerl,
+ [
+  {description, "An Erlang scramerl library"},
+  {vsn, "1"},
+  {modules, [
+             scramerl
+            ]},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {env, []}
+ ]}.

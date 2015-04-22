@@ -1,0 +1,30 @@
+# ignore any file generated under ebin dirs
+ebin
+
+# ignore dependencies folder
+deps
+
+#docs
+doc
+!doc/overview.edoc
+
+# ignore sasl_log
+sasl_log
+
+#ignore autodeps
+*.autodeps
+
+#ignore emacs bkp + autostore
+*~
+*\#
+*/.#*
+erl_crash.dump
+
+#ignore vim swp
+*.swp
+
+# ignore .plts (Dialyzer PLT directory)
+.plts
+
+# ignore .rebar folder
+.rebar
