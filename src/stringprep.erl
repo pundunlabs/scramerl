@@ -1,25 +1,49 @@
 -module(stringprep).
 
 %% Exported functions
--export([create_code/0,
-	 create_code/2]).
+-export([prepare/1]).
 
 %%%===================================================================
 %%% API
 %%%===================================================================
+
 %%--------------------------------------------------------------------
 %% @doc
-%%
+%% Implements RFC 3454 "Preparation of Internationalized Strings
+%% ("stringprep")".
+%% Preperation does Mapping, Prohibiting. Currently it does not do
+%% Normalization and ignores Bidirectional Characters.
+%% @end
+%%--------------------------------------------------------------------
+-spec prepare(String :: string) -> {ok, PString :: string()} |
+				   {error, Reason :: term()}.
+prepare(String) ->
+    case code:which(stringprep_lib) of
+	non_existing ->
+	    create_code();
+	_ ->
+	    ok
+    end,
+    Mapped = lists:flatten([ stringprep_lib:map(C) || C <- String ]),
+    [ C || C <- Mapped, stringprep_lib:prohibit(C) == false ].
+
+%%%===================================================================
+%%% Internal functions
+%%%===================================================================
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Creates stringprep_lib module which has map and prohibit functions.
 %% @end
 %%--------------------------------------------------------------------
 create_code()->
-    PrivDir = code:priv_dir(scamerl),
+    PrivDir = code:priv_dir(scramerl),
     create_code(filename:join(PrivDir,"stringprep_appb.cfg"),
 		filename:join(PrivDir,"stringprep_appc.cfg")).
 
 %%--------------------------------------------------------------------
 %% @doc
-%%
+%% Creates stringprep_lib module which has map and prohibit functions.
 %% @end
 %%--------------------------------------------------------------------
 create_code(MapFile, PFile) ->
@@ -35,13 +59,9 @@ create_code(MapFile, PFile) ->
 
  
 
-%%%===================================================================
-%%% Internal functions
-%%%===================================================================
-
 %%--------------------------------------------------------------------
 %% @doc
-%%
+%% Make module 'stringprep_lib' with map/1 and prohibit/1 functions.
 %% @end
 %%--------------------------------------------------------------------
 make_mod(Mappings, PList) ->
@@ -57,7 +77,7 @@ make_mod(Mappings, PList) ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%%
+%% Make map/1 function.
 %% @end
 %%--------------------------------------------------------------------
 make_map_fun(Mappings) ->
@@ -72,7 +92,7 @@ make_map_fun(Mappings) ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%%
+%% Make case clauses for map/1 function.
 %% @end
 %%--------------------------------------------------------------------
 make_map_clauses(Arg1, Mappings) ->
@@ -80,7 +100,7 @@ make_map_clauses(Arg1, Mappings) ->
     
 %%--------------------------------------------------------------------
 %% @doc
-%%
+%% Make case clauses for map/1 function.
 %% @end
 %%--------------------------------------------------------------------
 make_map_clauses(_Arg1, [], Acc) ->
@@ -97,7 +117,7 @@ make_map_clauses(_Arg1, [[{_, Line, _}] | _Rest], _Acc) ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%%
+%% Make prohibit/1 function.
 %% @end
 %%--------------------------------------------------------------------
 make_prohibit_fun(Mappings) ->
@@ -112,7 +132,7 @@ make_prohibit_fun(Mappings) ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%%
+%% Make case clauses for prohibit/1 function.
 %% @end
 %%--------------------------------------------------------------------
 make_prohibit_clauses(Arg1, Mappings) ->
@@ -120,7 +140,7 @@ make_prohibit_clauses(Arg1, Mappings) ->
     
 %%--------------------------------------------------------------------
 %% @doc
-%%
+%% Make case clauses for prohibit/1 function.
 %% @end
 %%--------------------------------------------------------------------
 make_prohibit_clauses(_Arg1, [], Acc) ->
@@ -143,7 +163,7 @@ make_prohibit_clauses(_Arg1, [[{_, Line, _}] | _Rest], _Acc) ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%%
+%% Make module_info/1 function.
 %% @end
 %%--------------------------------------------------------------------
 mod_info(Name) ->
@@ -158,7 +178,7 @@ mod_info(Name) ->
 
 %%--------------------------------------------------------------------
 %% @doc
-%%
+%% Make a function call cerl with given Mod, Fun, and Args.
 %% @end
 %%--------------------------------------------------------------------
 make_call(Mod0, Fun0, Args) ->
