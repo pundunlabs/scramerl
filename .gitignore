@@ -1,8 +1,9 @@
-# ignore any file generated under ebin dirs
-ebin
+#ignore generated erlang sources
+src/stringprep_mp.erl
+src/stringprep_pp.erl
 
-# ignore dependencies folder
-deps
+# ignore any files and folders generated under _build dir
+_build
 
 #docs
 doc
@@ -14,17 +15,22 @@ sasl_log
 #ignore autodeps
 *.autodeps
 
+# ignore any compiled c-code under system architecture directory
+x86_64-unknown-linux-gnu
+
 #ignore emacs bkp + autostore
 *~
 *\#
 */.#*
 erl_crash.dump
-
 #ignore vim swp
 *.swp
+
+#ignore generated libraries
+*/leveldb_nif.so
 
 # ignore .plts (Dialyzer PLT directory)
 .plts
 
-# ignore .rebar folder
-.rebar
+# ignore rebar.lock file
+rebar.lock
